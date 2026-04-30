@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Cars.Management;
 using Cars.DataAccess.Entities.Resources;
-using Cars.DataAccess.Entities;
 
 namespace Cars.Controllers
 {
@@ -31,23 +30,23 @@ namespace Cars.Controllers
         [HttpPost("addCar")]
         public async Task<ActionResult> AddCar([FromBody] CarRequestPayload car)
         {
-            Car newCar = await carManagementProvider.AddCar(car).ConfigureAwait(false);
-            return Ok("Successfully added car: " + newCar.ToString());
+            var newCar = await carManagementProvider.AddCar(car).ConfigureAwait(false);
+            return CreatedAtAction(nameof(GetCar), new { id = newCar.Id }, newCar);
         }
 
         [HttpDelete("removeCar/{id}")]
         public async Task<ActionResult> DeleteCar(string id)
         {
             await carManagementProvider.RemoveCar(id).ConfigureAwait(false);
-            return Ok("Successfully removed car with id: " + id);
+            return NoContent();
         }
 
         [HttpPatch("updateCar/{id}")]
         public async Task<ActionResult> UpdateCar(string id, [FromBody] CarUpdatePayload updatePayload)
-        {            
+        {
             CarResponsePayload updatedCar = await carManagementProvider.UpdateCar(id, updatePayload)
                 .ConfigureAwait(false);
-            return Ok("Successfully updated car: " + updatedCar.ToString());
+            return Ok(updatedCar);
         }
     }
 }

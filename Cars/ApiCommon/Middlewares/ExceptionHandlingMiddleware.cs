@@ -7,21 +7,16 @@ namespace Cars.ApiCommon.Middlewares
     /// <summary>
     /// Middleware to handle exceptions in the ASP.NET Core pipeline.
     /// </summary>
-    public class ExceptionHandlingMiddleware
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
+    /// </remarks>
+    /// <param name="next">The next middleware in the pipeline.</param>
+    public class ExceptionHandlingMiddleware(RequestDelegate next)
     {
         /// <summary>
         /// The next middleware in the pipeline.
         /// </summary>
-        private readonly RequestDelegate _next;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionHandlingMiddleware"/> class.
-        /// </summary>
-        /// <param name="next">The next middleware in the pipeline.</param>
-        public ExceptionHandlingMiddleware(RequestDelegate next)
-        {
-            _next = next;
-        }
+        private readonly RequestDelegate _next = next;
 
         /// <summary>
         /// Invokes the middleware to handle exceptions in the request pipeline.
@@ -45,7 +40,7 @@ namespace Cars.ApiCommon.Middlewares
         /// </summary>
         /// <param name="context">The HttpContext.</param>
         /// <param name="exception">The exception that was thrown.</param>
-        private async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             ErrorDetail errorDetail;
             HttpResponse response = context.Response;
