@@ -1,4 +1,4 @@
-﻿using Cars.DataAccess.Entities;
+using Cars.DataAccess.Entities;
 using Cars.DataAccess.Entities.Resources;
 using Cars.DataAccess;
 using Cars.ApiCommon.Extensions;
@@ -20,12 +20,12 @@ namespace Cars.Management
             {
                 Car newCar = carRequestPayload.ToCar();
                 await carDataProvider.AddCarAsync(newCar);
-                logger.LogInformation("Added car: " + newCar.ToString());
+                logger.LogInformation("Added car: {Car}", newCar);
                 return newCar;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to add car: " + e.Message);
+                logger.LogError(e, "Failed to add car");
                 throw;
             }
         }
@@ -36,12 +36,12 @@ namespace Cars.Management
             {
                 var response = await carDataProvider.GetCarsAsync();
 
-                logger.LogInformation("Cars obtained: " + response.Count() + " cars");
+                logger.LogInformation("Cars obtained: {Count} cars", response.Count());
                 return response;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to get cars: " + e.Message);
+                logger.LogError(e, "Failed to get cars");
                 throw;
             }
         }
@@ -51,12 +51,12 @@ namespace Cars.Management
             try
             {
                 var car = await carDataProvider.GetCarAsync(id);
-                logger.LogInformation("Car obtained: " + car.ToString());
+                logger.LogInformation("Car obtained: {Car}", car);
                 return car;
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to get car: " + e.Message);
+                logger.LogError(e, "Failed to get car");
                 throw;
             }
         }
@@ -66,11 +66,11 @@ namespace Cars.Management
             try
             {
                 await carDataProvider.RemoveCarAsync(id);
-                logger.LogInformation("Removed car: " + id);
+                logger.LogInformation("Removed car with id: {Id}", id);
             }
             catch (Exception e)
             {
-                logger.LogError(e, "Failed to remove car: " + e.Message);
+                logger.LogError(e, "Failed to remove car");
                 throw;
             }
         }
@@ -84,13 +84,13 @@ namespace Cars.Management
             try
             {
                 await carDataProvider.UpdateCarAsync(id, updatePayload);
-                logger.LogInformation($"Updated car with ID: {id}, Changes: {updatePayload}");
+                logger.LogInformation("Updated car with ID: {Id}, Changes: {UpdatePayload}", id, updatePayload);
 
                 return await carDataProvider.GetCarAsync(id).ConfigureAwait(false);
             }
             catch (Exception e)
             {
-                logger.LogError(e, $"Failed to update car with ID: {id}: {e.Message}");
+                logger.LogError(e, "Failed to update car with ID: {Id}", id);
                 throw;
             }
         }

@@ -17,7 +17,7 @@ namespace Cars.Controllers
         public async Task<ActionResult> GetCars()
         {
             IEnumerable<CarResponsePayload> cars = await carManagementProvider.GetCars().ConfigureAwait(false);
-            logger.LogInformation("Cars obtained: " + cars.Count() + " cars");
+            logger.LogInformation("Cars obtained: {Count} cars", cars.Count());
             return Ok(cars);
         }
 
