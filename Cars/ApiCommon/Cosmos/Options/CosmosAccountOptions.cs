@@ -20,6 +20,7 @@ namespace Cars.ApiCommon.Cosmos.Options
 
         /// <summary>
         /// The environment variable name for the Cosmos DB MSI client ID.
+        /// </summary>
         public string CosmosMSIEnvName = "COSMOS_MSI_CLIENT_ID";
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace Cars.ApiCommon.Cosmos.Options
                     containers,
                     clientOptions).GetAwaiter().GetResult(); // Calling GetAwaiter().GetResult() to block until the task is completed.
                 
-                logger.LogInformation($"Cosmos DB client initialized for endpoint: {CosmosClient.Endpoint.AbsoluteUri}");
+                logger.LogInformation("Cosmos DB client initialized for endpoint: {Endpoint}", CosmosClient.Endpoint.AbsoluteUri);
             }
             catch (Exception ex)
             {
