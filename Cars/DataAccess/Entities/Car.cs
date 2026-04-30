@@ -2,31 +2,26 @@ using System.Text.Json.Serialization;
 
 namespace Cars.DataAccess.Entities
 {
-    public class Car
+    public class Car(
+        string make,
+        string model,
+        int year,
+        string? imageUrl = null)
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         [JsonPropertyName("make")]
-        public string Make { get; set; }
+        public string Make { get; set; } = make;
 
         [JsonPropertyName("model")]
-        public string Model { get; set; }
+        public string Model { get; set; } = model;
 
         [JsonPropertyName("year")]
-        public int Year { get; set; }
+        public int Year { get; set; } = year;
 
         [JsonPropertyName("imageUrl")]
-        public string? ImageUrl { get; set; }
-
-        public Car(string make, string model, int year, string? imageUrl = null)
-        {
-            Id = Guid.NewGuid().ToString();
-            Make = make;
-            Model = model;
-            Year = year;
-            ImageUrl = imageUrl;
-        }
+        public string? ImageUrl { get; set; } = imageUrl;
 
         public override string ToString()
         {

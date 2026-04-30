@@ -5,27 +5,25 @@ namespace Cars.DataAccess.Entities.Resources
     /// <summary>
     /// Payload model for partial updates to a car
     /// </summary>
-    public class CarUpdatePayload
+    public class CarUpdatePayload(
+        string? make = null,
+        string? model = null,
+        int? year = null,
+        string? imageUrl = null)
     {
         [JsonPropertyName("make")]
-        public string? Make { get; set; }
+        public string? Make { get; set; } = make;
 
         [JsonPropertyName("model")]
-        public string? Model { get; set; }
+        public string? Model { get; set; } = model;
 
         [JsonPropertyName("year")]
-        public int? Year { get; set; }
+        public int? Year { get; set; } = year;
 
         [JsonPropertyName("imageUrl")]
-        public string? ImageUrl { get; set; }
-        
-        public CarUpdatePayload(string? make = null, string? model = null, int? year = null, string? imageUrl = null)
-        {
-            Make = make;
-            Model = model;
-            Year = year;     
-            ImageUrl = imageUrl;
-        }
+        public string? ImageUrl { get; set; } = imageUrl;
+
+        public bool HasUpdates() => Make != null || Model != null || Year != null || ImageUrl != null;
 
         public override string ToString()
         {

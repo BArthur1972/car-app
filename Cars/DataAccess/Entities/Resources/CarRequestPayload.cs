@@ -2,24 +2,20 @@
 
 namespace Cars.DataAccess.Entities.Resources
 {
-    public class CarRequestPayload
+    [method: JsonConstructor]
+    public class CarRequestPayload(
+        string make,
+        string model,
+        int year,
+        string? imageUrl)
     {
-        public required string Make { get; set; }
+        public required string Make { get; set; } = make;
 
-        public required string Model { get; set; }
+        public required string Model { get; set; } = model;
 
-        public required int Year { get; set; }
+        public required int Year { get; set; } = year;
 
-        public string? ImageUrl { get; set; }
-        
-        [JsonConstructor]
-        public CarRequestPayload(string make, string model, int year, string? imageUrl)
-        {
-            Make = make;
-            Model = model;
-            Year = year;     
-            ImageUrl = imageUrl;
-        }
+        public string? ImageUrl { get; set; } = imageUrl;
 
         public override string ToString()
         {

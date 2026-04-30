@@ -2,19 +2,17 @@
 using Cars.DataAccess.Entities.Resources;
 using Cars.DataAccess;
 using Cars.ApiCommon.Extensions;
+using Cars.ApiCommon.Exceptions;
 
 namespace Cars.Management
 {
-    public class CarManagementProvider : ICarManagementProvider
+    public class CarManagementProvider(
+        ICarDataProvider carDataProvider,
+        ILogger<CarManagementProvider> logger)
+        : ICarManagementProvider
     {
-        private readonly ICarDataProvider carDataProvider;
-        private readonly ILogger<CarManagementProvider> logger;
-
-        public CarManagementProvider(ICarDataProvider carDataProvider, ILogger<CarManagementProvider> logger)
-        {
-            this.carDataProvider = carDataProvider;
-            this.logger = logger;
-        }
+        private readonly ICarDataProvider carDataProvider = carDataProvider;
+        private readonly ILogger<CarManagementProvider> logger = logger;
 
         public async Task<Car> AddCar(CarRequestPayload carRequestPayload)
         {
@@ -79,6 +77,10 @@ namespace Cars.Management
 
         public async Task<CarResponsePayload> UpdateCar(string id, CarUpdatePayload updatePayload)
         {
+            if (!updatePayload.HasUpdates())
+                throw new BadRequestException(
+                    message: "Update payload must contain at least one property to update");
+
             try
             {
                 await carDataProvider.UpdateCarAsync(id, updatePayload);

@@ -20,7 +20,7 @@ namespace Cars.DataAccess
             this.cosmosAccountOptions = cosmosAccountOptions.Value;
             this.cosmosContainerOptions = cosmosContainerOptions.Value;
             this.logger = logger;
-            this.container = new CosmosFacade(this.cosmosAccountOptions, this.cosmosContainerOptions, this.logger).GetContainer();
+            container = new CosmosFacade(this.cosmosAccountOptions, this.cosmosContainerOptions, this.logger).GetContainer();
         }
 
         public async Task AddCarAsync(Car car)
