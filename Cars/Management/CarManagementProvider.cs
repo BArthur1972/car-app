@@ -46,7 +46,7 @@ namespace Cars.Management
             }
         }
 
-        public async Task<CarResponsePayload?> GetCar(string id)
+        public async Task<CarResponsePayload> GetCar(string id)
         {
             try
             {
