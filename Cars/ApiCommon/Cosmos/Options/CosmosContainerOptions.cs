@@ -4,7 +4,7 @@ namespace Cars.ApiCommon.Cosmos.Options
     {
         public const string SectionKey = "CosmosDB:CosmosContainerOptions";
 
-        public string DatabaseId { get; set; } = null!;
-        public string ContainerId { get; set; } = null!;
+        public required string DatabaseId { get; set; }
+        public required string ContainerId { get; set; }
     }
 }

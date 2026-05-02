@@ -42,30 +42,32 @@ namespace Cars.ApiCommon.Middlewares
         /// <param name="exception">The exception that was thrown.</param>
         private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            ErrorDetail errorDetail;
+            ErrorResponse errorResponse;
             HttpResponse response = context.Response;
             
             // All exceptions should either inherit from ApplicationException.
             if (exception is ApplicationException appEx)
             {
                 response.StatusCode = appEx.HttpStatusCode;
-                errorDetail = new ErrorDetail(
+                errorResponse = new ErrorResponse(
+                    new ErrorDetail(
                     appEx.StatusCode,
                     appEx.Message
-                );
+                ));
             }
             else // For any other unhandled exception, we return 500 Internal Server Error.
             {
                 response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                errorDetail = new ErrorDetail(
+                errorResponse = new ErrorResponse(
+                    new ErrorDetail(
                     "InternalServerError",
                     "An internal server error has occurred."
-                );
+                ));
             }
 
-            response.Headers.TryAdd("x-ms-error-code", errorDetail.Code);
+            response.Headers.TryAdd("x-ms-error-code", errorResponse.Error.Code);
             response.ContentType = "application/json";
-            await response.WriteAsJsonAsync(errorDetail).ConfigureAwait(false);
+            await response.WriteAsJsonAsync(errorResponse).ConfigureAwait(false);
         }
     }
 }

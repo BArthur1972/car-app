@@ -25,7 +25,7 @@ namespace Cars.ApiCommon.Extensions
         /// <param name="builder">The WebApplicationBuilder instance.</param>
         public static void AddCosmosContainerOptions(this WebApplicationBuilder builder)
         {
-            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(builder);
 
             ConfigurationManager configuration = builder.Configuration;
             IServiceCollection services = builder.Services;
@@ -41,7 +41,7 @@ namespace Cars.ApiCommon.Extensions
         /// <param name="builder">The WebApplicationBuilder instance.</param>
         public static void AddCosmosAccountOptions(this WebApplicationBuilder builder)
         {
-            ArgumentNullException.ThrowIfNull(builder, nameof(builder));
+            ArgumentNullException.ThrowIfNull(builder);
 
             ConfigurationManager configuration = builder.Configuration;
             IServiceCollection services = builder.Services;
@@ -50,8 +50,8 @@ namespace Cars.ApiCommon.Extensions
                 configuration.GetSection(CosmosAccountOptions.SectionKey))
                 .Configure<ILoggerFactory, IOptions<CosmosContainerOptions>>((options, loggerFactory, cosmosContainerOptions) =>
                     {
-                        ArgumentNullException.ThrowIfNull(loggerFactory, nameof(loggerFactory));
-                        ArgumentNullException.ThrowIfNull(cosmosContainerOptions, nameof(cosmosContainerOptions));
+                        ArgumentNullException.ThrowIfNull(loggerFactory);
+                        ArgumentNullException.ThrowIfNull(cosmosContainerOptions);
 
                         var logger = loggerFactory.CreateLogger<CosmosAccountOptions>();
                         options.InitializeCosmosClient(logger, cosmosContainerOptions.Value);
@@ -64,13 +64,14 @@ namespace Cars.ApiCommon.Extensions
             IConfigurationSection configurationSection)
             where TOptions : class
         {
-            ArgumentNullException.ThrowIfNull(services, nameof(services));
-            ArgumentNullException.ThrowIfNull(configurationSection, nameof(configurationSection));
+            ArgumentNullException.ThrowIfNull(services);
+            ArgumentNullException.ThrowIfNull(configurationSection);
 
             return services
                 .AddOptions<TOptions>()
                 .Bind(configurationSection)
-                .ValidateDataAnnotations();
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
     }
 }
