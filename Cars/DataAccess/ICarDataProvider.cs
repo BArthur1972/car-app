@@ -1,12 +1,12 @@
 using Cars.DataAccess.Entities;
-using Cars.DataAccess.Entities.Resources;
+using Cars.Models;
 
 namespace Cars.DataAccess;
 
 public interface ICarDataProvider
 {
-    Task<IEnumerable<CarResponsePayload>> GetCarsAsync();
-    Task<CarResponsePayload> GetCarAsync(string id);
+    Task<IEnumerable<Car>> GetCarsAsync();
+    Task<Car> GetCarAsync(string id);
     Task AddCarAsync(Car car);
     Task RemoveCarAsync(string id);
     Task UpdateCarAsync(string id, CarUpdatePayload updatePayload);

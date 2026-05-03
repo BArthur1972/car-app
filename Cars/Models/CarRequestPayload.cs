@@ -1,6 +1,6 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
-namespace Cars.DataAccess.Entities.Resources;
+namespace Cars.Models;
 
 [method: JsonConstructor]
 public class CarRequestPayload(

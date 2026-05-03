@@ -1,8 +1,7 @@
 using System.Text.Json.Serialization;
 
-namespace Cars.DataAccess.Entities.Resources;
+namespace Cars.Models;
 
-// This class will be used to deserialize the response payload
 public class CarResponsePayload(
     string id,
     string make,

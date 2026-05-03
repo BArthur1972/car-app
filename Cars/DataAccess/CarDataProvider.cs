@@ -2,7 +2,7 @@ using Cars.ApiCommon.Cosmos;
 using Cars.ApiCommon.Cosmos.Options;
 using Cars.ApiCommon.Exceptions;
 using Cars.DataAccess.Entities;
-using Cars.DataAccess.Entities.Resources;
+using Cars.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using ApplicationException = Cars.ApiCommon.Exceptions.ApplicationException;
@@ -54,12 +54,12 @@ public class CarDataProvider : ICarDataProvider
         }
     }
 
-    public async Task<CarResponsePayload> GetCarAsync(string id)
+    public async Task<Car> GetCarAsync(string id)
     {
         try
         {
-            ItemResponse<CarResponsePayload> response =
-                await container.ReadItemAsync<CarResponsePayload>(id, new PartitionKey(id));
+            ItemResponse<Car> response =
+                await container.ReadItemAsync<Car>(id, new PartitionKey(id));
 
             logger.LogInformation("Car obtained: {Car}", response.Resource);
             return response.Resource;
@@ -75,12 +75,12 @@ public class CarDataProvider : ICarDataProvider
         }
     }
 
-    public async Task<IEnumerable<CarResponsePayload>> GetCarsAsync()
+    public async Task<IEnumerable<Car>> GetCarsAsync()
     {
-        List<CarResponsePayload> cars = [];
+        List<Car> cars = [];
         try
         {
-            var query = container.GetItemQueryIterator<CarResponsePayload>("SELECT * FROM c");
+            var query = container.GetItemQueryIterator<Car>("SELECT * FROM c");
             while (query.HasMoreResults)
             {
                 var response = await query.ReadNextAsync();

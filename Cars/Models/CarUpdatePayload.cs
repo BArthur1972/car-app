@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Cars.DataAccess.Entities.Resources;
+namespace Cars.Models;
 
 /// <summary>
 /// Payload model for partial updates to a car
@@ -32,7 +32,7 @@ public class CarUpdatePayload(
         if (Model != null) props.Add($"Model={Model}");
         if (Year != null) props.Add($"Year={Year}");
         if (ImageUrl != null) props.Add($"ImageUrl={ImageUrl}");
-        
+
         return $"CarUpdate with changes to: {string.Join(", ", props)}";
     }
 }

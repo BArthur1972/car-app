@@ -1,8 +1,7 @@
-using Cars.DataAccess.Entities;
-using Cars.DataAccess.Entities.Resources;
 using Cars.DataAccess;
 using Cars.ApiCommon.Extensions;
 using Cars.ApiCommon.Exceptions;
+using Cars.Models;
 
 namespace Cars.Management;
 
@@ -14,14 +13,14 @@ public class CarManagementProvider(
     private readonly ICarDataProvider carDataProvider = carDataProvider;
     private readonly ILogger<CarManagementProvider> logger = logger;
 
-    public async Task<Car> AddCar(CarRequestPayload carRequestPayload)
+    public async Task<CarResponsePayload> AddCar(CarRequestPayload carRequestPayload)
     {
         try
         {
-            Car newCar = carRequestPayload.ToCar();
+            var newCar = carRequestPayload.ToCar();
             await carDataProvider.AddCarAsync(newCar);
             logger.LogInformation("Added car: {Car}", newCar);
-            return newCar;
+            return newCar.ToResponsePayload();
         }
         catch (Exception e)
         {
@@ -34,10 +33,9 @@ public class CarManagementProvider(
     {
         try
         {
-            var response = await carDataProvider.GetCarsAsync();
-
-            logger.LogInformation("Cars obtained: {Count} cars", response.Count());
-            return response;
+            var cars = await carDataProvider.GetCarsAsync();
+            logger.LogInformation("Cars obtained: {Count} cars", cars.Count());
+            return cars.ToResponsePayloads();
         }
         catch (Exception e)
         {
@@ -52,7 +50,7 @@ public class CarManagementProvider(
         {
             var car = await carDataProvider.GetCarAsync(id);
             logger.LogInformation("Car obtained: {Car}", car);
-            return car;
+            return car.ToResponsePayload();
         }
         catch (Exception e)
         {
@@ -86,7 +84,8 @@ public class CarManagementProvider(
             await carDataProvider.UpdateCarAsync(id, updatePayload);
             logger.LogInformation("Updated car with ID: {Id}, Changes: {UpdatePayload}", id, updatePayload);
 
-            return await carDataProvider.GetCarAsync(id).ConfigureAwait(false);
+            var car = await carDataProvider.GetCarAsync(id).ConfigureAwait(false);
+            return car.ToResponsePayload();
         }
         catch (Exception e)
         {

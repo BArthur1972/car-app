@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Cars.Management;
-using Cars.DataAccess.Entities.Resources;
+using Cars.Models;
 
 namespace Cars.Controllers;
 
@@ -23,14 +23,14 @@ public class CarController(ILogger<CarController> logger, ICarManagementProvider
     [HttpGet("getCar/{id}")]
     public async Task<ActionResult> GetCar(string id)
     {
-        CarResponsePayload? car = await carManagementProvider.GetCar(id).ConfigureAwait(false);
+        CarResponsePayload car = await carManagementProvider.GetCar(id).ConfigureAwait(false);
         return Ok(car);
     }
 
     [HttpPost("addCar")]
     public async Task<ActionResult> AddCar([FromBody] CarRequestPayload car)
     {
-        var newCar = await carManagementProvider.AddCar(car).ConfigureAwait(false);
+        CarResponsePayload newCar = await carManagementProvider.AddCar(car).ConfigureAwait(false);
         return CreatedAtAction(nameof(GetCar), new { id = newCar.Id }, newCar);
     }
 
