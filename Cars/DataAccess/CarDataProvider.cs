@@ -5,7 +5,6 @@ using Cars.DataAccess.Entities;
 using Cars.Models;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
-using ApplicationException = Cars.ApiCommon.Exceptions.ApplicationException;
 
 namespace Cars.DataAccess;
 
@@ -141,10 +140,8 @@ public class CarDataProvider : ICarDataProvider
                     id,
                     response.StatusCode,
                     response.ErrorMessage);
-                throw new ApplicationException(
-                    "InternalServerError",
-                    (int)System.Net.HttpStatusCode.InternalServerError,
-                    $"Failed to update car with Id: {id}");
+                throw new InternalServerErrorException(
+                    message: $"Failed to update car with Id: {id}");
             }
 
             logger.LogInformation("Successfully updated car with Id: {Id}", id);
