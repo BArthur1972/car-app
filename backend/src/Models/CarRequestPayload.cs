@@ -1,8 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Cars.Models;
 
-[method: JsonConstructor]
+[method: JsonConstructor, SetsRequiredMembers]
 public class CarRequestPayload(
     string make,
     string model,

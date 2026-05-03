@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.Build.Traversal/3.3.0">
+
+  <ItemGroup>
+    <ProjectReference Include="Management.UnitTest/Management.UnitTest.csproj" />
+    <ProjectReference Include="ApiCommon.UnitTest/ApiCommon.UnitTest.csproj" />
+  </ItemGroup>
+
+</Project>

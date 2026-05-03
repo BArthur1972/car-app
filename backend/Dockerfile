@@ -7,12 +7,12 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 ## restore
-COPY ["backend/Cars.csproj", "backend/"]
-RUN dotnet restore "backend/Cars.csproj"
+COPY ["src/Cars.csproj", "src/"]
+RUN dotnet restore "src/Cars.csproj"
 
 ## build
 COPY . .
-WORKDIR "/src/backend"
+WORKDIR "/src/src"
 RUN dotnet build "Cars.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Publish
