@@ -20,7 +20,9 @@ public static class StartupExtensions
         services.AddSingleton<ICarManagementProvider, CarManagementProvider>();
 
         services.AddHealthChecks()
-            .AddCheck<CosmosHealthCheck>("cosmos_health_check");
+            .AddCheck<CosmosHealthCheck>(
+                "cosmos_health_check",
+                timeout: TimeSpan.FromSeconds(5));
     }
 
     /// <summary>
@@ -52,7 +54,8 @@ public static class StartupExtensions
 
         services.AddOptionsWithValidation<CosmosAccountOptions>(
             configuration.GetSection(CosmosAccountOptions.SectionKey))
-            .Configure<ILoggerFactory, IOptions<CosmosContainerOptions>>((options, loggerFactory, cosmosContainerOptions) =>
+            .Configure<ILoggerFactory, IOptions<CosmosContainerOptions>>(
+                (options, loggerFactory, cosmosContainerOptions) =>
                 {
                     ArgumentNullException.ThrowIfNull(loggerFactory);
                     ArgumentNullException.ThrowIfNull(cosmosContainerOptions);

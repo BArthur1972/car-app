@@ -25,6 +25,11 @@ public class CosmosHealthCheck(
 
             return HealthCheckResult.Healthy("CosmosDB is healthy.");
         }
+        catch (OperationCanceledException ex)
+        {
+            return HealthCheckResult.Unhealthy(
+                "CosmosDB health check timed out — account may be unreachable.", ex);
+        }
         catch (Exception ex)
         {
             return HealthCheckResult.Unhealthy("CosmosDB health check failed.", ex);
