@@ -20,6 +20,7 @@ public static class StartupExtensions
         builder.Services.AddHealthChecks()
             .AddCheck<CosmosHealthCheck>(
                 "cosmos_health_check",
+                tags: ["ready"],
                 timeout: TimeSpan.FromSeconds(5));
     }
 
