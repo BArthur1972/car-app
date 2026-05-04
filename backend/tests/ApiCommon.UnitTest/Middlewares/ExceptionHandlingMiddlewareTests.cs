@@ -7,16 +7,6 @@ namespace ApiCommon.UnitTest.Middlewares;
 
 public class ExceptionHandlingMiddlewareTests
 {
-    private static ExceptionHandlingMiddleware MiddlewareThrowing(Exception ex)
-        => new(_ => throw ex);
-
-    private static DefaultHttpContext CreateContext()
-    {
-        var context = new DefaultHttpContext();
-        context.Response.Body = new MemoryStream();
-        return context;
-    }
-
     [Fact]
     public async Task InvokeAsync_Returns404_WhenDataNotFoundExceptionThrown()
     {
@@ -66,5 +56,15 @@ public class ExceptionHandlingMiddlewareTests
         await middleware.InvokeAsync(context);
 
         context.Response.StatusCode.Should().Be(200);
+    }
+
+    private static ExceptionHandlingMiddleware MiddlewareThrowing(Exception ex)
+        => new(_ => throw ex);
+
+    private static DefaultHttpContext CreateContext()
+    {
+        var context = new DefaultHttpContext();
+        context.Response.Body = new MemoryStream();
+        return context;
     }
 }

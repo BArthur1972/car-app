@@ -7,8 +7,6 @@ namespace ApiCommon.UnitTest.Extensions;
 
 public class CarExtensionsTests
 {
-    // ToCar
-
     [Fact]
     public void ToCar_MapsAllProperties()
     {
@@ -42,8 +40,6 @@ public class CarExtensionsTests
         car.Id.Should().NotBeNullOrEmpty();
     }
 
-    // ToResponsePayload
-
     [Fact]
     public void ToResponsePayload_MapsAllProperties()
     {
@@ -67,8 +63,6 @@ public class CarExtensionsTests
 
         payload.ImageUrl.Should().BeNull();
     }
-
-    // ToResponsePayloads
 
     [Fact]
     public void ToResponsePayloads_MapsCollection()

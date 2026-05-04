@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/ApiCommon.UnitTest/ApiCommon.UnitTest.csproj" />
+    <Project Path="tests/DataAccess.UnitTest/DataAccess.UnitTest.csproj" />
     <Project Path="tests/Management.UnitTest/Management.UnitTest.csproj" />
   </Folder>
 </Solution>

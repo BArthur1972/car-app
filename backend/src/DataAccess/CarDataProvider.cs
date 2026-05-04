@@ -1,32 +1,13 @@
-using Cars.ApiCommon.Cosmos;
-using Cars.ApiCommon.Cosmos.Options;
 using Cars.ApiCommon.Exceptions;
 using Cars.DataAccess.Entities;
 using Cars.Models;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.Options;
 
 namespace Cars.DataAccess;
 
-public class CarDataProvider : ICarDataProvider
+public class CarDataProvider(Container container, ILogger<CarDataProvider> logger)
+    : ICarDataProvider
 {
-    private readonly CosmosAccountOptions cosmosAccountOptions;
-    private readonly CosmosContainerOptions cosmosContainerOptions;
-    private readonly Container container;
-    private readonly ILogger<CarDataProvider> logger;
-
-    public CarDataProvider(
-        IOptions<CosmosAccountOptions> cosmosAccountOptions,
-        IOptions<CosmosContainerOptions> cosmosContainerOptions,
-        ILogger<CarDataProvider> logger)
-    {
-        this.cosmosAccountOptions = cosmosAccountOptions.Value;
-        this.cosmosContainerOptions = cosmosContainerOptions.Value;
-        this.logger = logger;
-        container = new CosmosFacade(this.cosmosAccountOptions, this.cosmosContainerOptions, this.logger)
-            .GetContainer();
-    }
-
     public async Task AddCarAsync(Car car)
     {
         try
@@ -44,7 +25,8 @@ public class CarDataProvider : ICarDataProvider
                 car.Model,
                 car.Year);
 
-            throw new BadRequestException(message: $"The car is invalid: {ex.Message}", innerException: ex);
+            throw new BadRequestException(
+                message: $"The car is invalid: {ex.Message}", innerException: ex);
         }
         catch (CosmosException e)
         {
