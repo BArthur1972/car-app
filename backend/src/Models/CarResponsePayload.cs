@@ -22,6 +22,7 @@ public class CarResponsePayload(
     public int Year { get; set; } = year;
 
     [JsonPropertyName("imageUrl")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ImageUrl { get; set; } = imageUrl;
 
     public override string ToString()

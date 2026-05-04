@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --ignore-path .gitignore --write '**/*.+(js|ts|json)'",
     "kill": "lsof -ti:3000 | xargs kill -9"
   },
   "dependencies": {
