@@ -1,11 +1,43 @@
-import { CarResponse } from "../types/car";
+import { HttpClient } from './http-client';
+import { API_CONFIG } from './config';
+import { CarResponse, CarRequest, CarUpdate } from '../types/car';
 
-export async function getCars(): Promise<CarResponse[]> {
-    const url = "http://localhost:5292/cars/getCars";
-    const response = await fetch(url);
-    if (!response.ok) {
-        console.log(`Failed to fetch ${url}: ${response.statusText}`);
-        throw new Error(`Failed to fetch ${url}: ${response.statusText}`);
-    }
-    return response.json() as Promise<CarResponse[]>;
+class ApiClient extends HttpClient {
+  constructor() {
+    super({
+      baseURL: API_CONFIG.baseURL,
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+  }
+
+  get cars() {
+    return {
+      get: (): Promise<CarResponse[]> => 
+        this.get<CarResponse[]>(API_CONFIG.endpoints.cars),
+      
+      getById: (id: string): Promise<CarResponse> => 
+        this.get<CarResponse>(API_CONFIG.endpoints.car(id)),
+      
+      create: (car: CarRequest): Promise<CarResponse> => 
+        this.post<CarResponse>(API_CONFIG.endpoints.addCar, car),
+      
+      update: (id: string, car: CarUpdate): Promise<CarResponse> => 
+        this.patch<CarResponse>(API_CONFIG.endpoints.updateCar(id), car),
+      
+      delete: (id: string): Promise<void> => 
+        this.delete<void>(API_CONFIG.endpoints.deleteCar(id)),
+    };
+  }
 }
+
+// Export a singleton instance
+export const api = new ApiClient();
+
+// Export individual functions for backward compatibility
+export const getCars = () => api.cars.get();
+export const getCar = (id: string) => api.cars.getById(id);
+export const addCar = (car: CarRequest) => api.cars.create(car);
+export const updateCar = (id: string, car: CarUpdate) => api.cars.update(id, car);
+export const deleteCar = (id: string) => api.cars.delete(id);
