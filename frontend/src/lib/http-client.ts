@@ -62,7 +62,7 @@ class HttpClient {
     });
   }
 
-  delete<T>(endpoint: string, options?: RequestInit): Promise<void> {
+  delete(endpoint: string, options?: RequestInit): Promise<void> {
     return this.fetchJSON<void>(endpoint, {
       ...options,
       method: 'DELETE',

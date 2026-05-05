@@ -27,15 +27,13 @@ class ApiClient extends HttpClient {
         this.patch<CarResponse>(API_CONFIG.endpoints.updateCar(id), car),
       
       delete: (id: string): Promise<void> => 
-        this.delete<void>(API_CONFIG.endpoints.deleteCar(id)),
+        this.delete(API_CONFIG.endpoints.deleteCar(id)),
     };
   }
 }
 
-// Export a singleton instance of the API client
 export const api = new ApiClient();
 
-// Export convenience functions for each API endpoint
 export const getCars = () => api.cars.get();
 export const getCar = (id: string) => api.cars.getById(id);
 export const addCar = (car: CarRequest) => api.cars.create(car);

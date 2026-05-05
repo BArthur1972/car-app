@@ -1,10 +1,8 @@
-import { CarResponse } from "../types/car";
 import { getCars } from "../lib/api";
 import CarGrid from "../components/CarGrid";
 
-
 export default async function Page() {
-    const cars: CarResponse[] = await getCars();
+    const cars = await getCars();
     return (
         <div className="min-h-screen bg-gray-50">
             <header className="bg-white shadow-sm">
