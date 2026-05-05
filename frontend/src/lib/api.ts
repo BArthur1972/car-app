@@ -32,10 +32,10 @@ class ApiClient extends HttpClient {
   }
 }
 
-// Export a singleton instance
+// Export a singleton instance of the API client
 export const api = new ApiClient();
 
-// Export individual functions for backward compatibility
+// Export convenience functions for each API endpoint
 export const getCars = () => api.cars.get();
 export const getCar = (id: string) => api.cars.getById(id);
 export const addCar = (car: CarRequest) => api.cars.create(car);

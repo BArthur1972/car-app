@@ -1,6 +1,6 @@
-import { CarResponse } from "./types/car";
-import { getCars } from "./lib/api"
-import CarGrid from "./components/CarGrid";
+import { CarResponse } from "../types/car";
+import { getCars } from "../lib/api";
+import CarGrid from "../components/CarGrid";
 
 
 export default async function Page() {
