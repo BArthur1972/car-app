@@ -1,6 +1,6 @@
-import { HttpClient } from './http-client';
-import { API_CONFIG } from './config';
-import { CarResponse, CarRequest, CarUpdate } from '../types/car';
+import { HttpClient } from '@/lib/http-client';
+import { API_CONFIG } from '@/lib/config';
+import { CarResponse, CarRequest, CarUpdate } from '@/types/car';
 
 class ApiClient extends HttpClient {
   constructor() {

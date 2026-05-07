@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { CarResponse } from "../types/car";
+import { CarResponse } from "@/types/car";
 
 interface CarCardProps {
     car: CarResponse;

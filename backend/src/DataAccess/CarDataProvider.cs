@@ -148,7 +148,7 @@ public class CarDataProvider(Container container, ILogger<CarDataProvider> logge
         if (updatePayload.Year != null)
             patchOperations.Add(PatchOperation.Set("/year", updatePayload.Year));
 
-        if (updatePayload.ImageUrl != null)
+        if (!string.IsNullOrWhiteSpace(updatePayload.ImageUrl))
             patchOperations.Add(PatchOperation.Set("/imageUrl", updatePayload.ImageUrl));
 
         return patchOperations;

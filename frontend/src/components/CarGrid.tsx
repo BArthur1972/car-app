@@ -1,5 +1,5 @@
-import { CarResponse } from "../types/car";
-import CarCard from "./CarCard";
+import { CarResponse } from "@/types/car";
+import CarCard from "@/components/CarCard";
 
 interface CarGridProps {
     cars: CarResponse[];
