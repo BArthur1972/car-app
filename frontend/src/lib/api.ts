@@ -12,24 +12,22 @@ class ApiClient extends HttpClient {
     });
   }
 
-  get cars() {
-    return {
-      get: (): Promise<CarResponse[]> => 
-        this.get<CarResponse[]>(API_CONFIG.endpoints.cars),
-      
-      getById: (id: string): Promise<CarResponse> => 
-        this.get<CarResponse>(API_CONFIG.endpoints.car(id)),
-      
-      create: (car: CarRequest): Promise<CarResponse> => 
-        this.post<CarResponse>(API_CONFIG.endpoints.addCar, car),
-      
-      update: (id: string, car: CarUpdate): Promise<CarResponse> => 
-        this.patch<CarResponse>(API_CONFIG.endpoints.updateCar(id), car),
-      
-      delete: (id: string): Promise<void> => 
-        this.delete(API_CONFIG.endpoints.deleteCar(id)),
-    };
-  }
+  readonly cars = {
+    get: (): Promise<CarResponse[]> =>
+      this.get<CarResponse[]>(API_CONFIG.endpoints.cars),
+
+    getById: (id: string): Promise<CarResponse> =>
+      this.get<CarResponse>(API_CONFIG.endpoints.car(id)),
+
+    create: (car: CarRequest): Promise<CarResponse> =>
+      this.post<CarResponse>(API_CONFIG.endpoints.addCar, car),
+
+    update: (id: string, car: CarUpdate): Promise<CarResponse> =>
+      this.patch<CarResponse>(API_CONFIG.endpoints.updateCar(id), car),
+
+    delete: (id: string): Promise<void> =>
+      this.delete(API_CONFIG.endpoints.deleteCar(id)),
+  };
 }
 
 export const api = new ApiClient();
