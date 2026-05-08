@@ -2,6 +2,8 @@ import Link from "next/link";
 import { getCars } from "@/lib/api";
 import CarGrid from "@/components/CarGrid";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Page() {
     const cars = await getCars();
     return (

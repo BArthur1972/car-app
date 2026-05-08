@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
@@ -63,6 +64,27 @@ public class CosmosAccountOptions
             if (UseEmulator)
             {
                 clientOptions.ConnectionMode = ConnectionMode.Gateway;
+
+                // The Cosmos emulator returns 127.0.0.1 in its service discovery responses.
+                // From within a Docker container, 127.0.0.1 resolves to the container's own
+                // loopback, not the emulator. This handler intercepts those connections and
+                // redirects them to the actual emulator hostname.
+                clientOptions.HttpClientFactory = () => new HttpClient(new SocketsHttpHandler
+                {
+                    ConnectCallback = async (context, ct) =>
+                    {
+                        var emulatorHost = new Uri(AccountEndpoint).Host;
+                        var host = context.DnsEndPoint.Host is "127.0.0.1" or "localhost"
+                            ? emulatorHost
+                            : context.DnsEndPoint.Host;
+                        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+                        {
+                            NoDelay = true
+                        };
+                        await socket.ConnectAsync(host, context.DnsEndPoint.Port, ct);
+                        return new NetworkStream(socket, ownsSocket: true);
+                    }
+                });
 
                 logger.LogInformation("Using local Cosmos DB emulator at {Endpoint}", AccountEndpoint);
                 CosmosClient ??= CosmosClient.CreateAndInitializeAsync(

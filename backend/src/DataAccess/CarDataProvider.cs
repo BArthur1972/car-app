@@ -68,13 +68,12 @@ public class CarDataProvider(Container container, ILogger<CarDataProvider> logge
                 cars.AddRange(response);
             }
 
-            if (cars.Count == 0)
-            {
-                logger.LogInformation("No cars found");
-                throw new DataNotFoundException(message: "No cars found");
-            }
-
             logger.LogDebug("Cars obtained: {Count} cars", cars.Count);
+            return cars;
+        }
+        catch (CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            logger.LogInformation("Container or database not found, returning empty list");
             return cars;
         }
         catch (CosmosException e)
