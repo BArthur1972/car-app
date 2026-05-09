@@ -21,6 +21,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Initialize Cosmos DB infrastructure (database/container)
+// In production, infrastructure should be pre-provisioned via IaC (Bicep/Terraform)
+// This only auto-creates in Development or when using the Cosmos emulator
+await app.InitializeCosmosDbAsync();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -29,7 +34,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
+
 app.UseCors();
 
 app.UseAuthorization();

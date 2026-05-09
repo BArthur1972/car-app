@@ -5,6 +5,8 @@ services:
       - "8081:8081"
       - "1234:1234"
     volumes:
+      # Named volume persists database state across container restarts.
+      # If needed, reset with: docker compose down -v && docker compose up
       - cosmos-data:/tmp/cosmos/appdata
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/ready"]
@@ -18,10 +20,15 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
+      # 5292: External port accessible from host/frontend browser
+      # 8080: Internal ASP.NET Core port (ASPNETCORE_URLS)
       - "5292:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      # Internal Docker network address for Cosmos emulator connection.
       - CosmosDB__CosmosAccountOptions__AccountEndpoint=http://cosmos-emulator:8081
+      # Enable container-specific networking workarounds for Cosmos emulator
+      - CosmosDB__CosmosAccountOptions__RunningInContainer=true
     depends_on:
       cosmos-emulator:
         condition: service_healthy
@@ -30,11 +37,15 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # Pass NEXT_PUBLIC_* vars as build args (required for client-side bundle)
+        NEXT_PUBLIC_BACKEND_URL: http://localhost:5292
     ports:
       - "3000:3000"
     environment:
-      - API_URL=http://backend:8080
-      - NEXT_PUBLIC_API_URL=http://localhost:5292
+      # Server-side backend URL (used by Server Components via Docker internal network)
+      # Client-side uses NEXT_PUBLIC_BACKEND_URL baked into bundle at build time
+      - BACKEND_URL=http://backend:8080
     depends_on:
       - backend
 

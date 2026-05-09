@@ -25,6 +25,12 @@ public class CosmosAccountOptions
     public bool UseEmulator { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the backend is running in a Docker container.
+    /// When true, applies custom networking logic to handle Cosmos emulator in containers.
+    /// </summary>
+    public bool RunningInContainer { get; set; }
+
+    /// <summary>
     /// Gets or sets the Cosmos DB account key. Only used when connecting to the local emulator.
     /// </summary>
     public string? AccountKey { get; set; }
@@ -65,28 +71,38 @@ public class CosmosAccountOptions
             {
                 clientOptions.ConnectionMode = ConnectionMode.Gateway;
 
-                // The Cosmos emulator returns 127.0.0.1 in its service discovery responses.
-                // From within a Docker container, 127.0.0.1 resolves to the container's own
-                // loopback, not the emulator. This handler intercepts those connections and
-                // redirects them to the actual emulator hostname.
-                clientOptions.HttpClientFactory = () => new HttpClient(new SocketsHttpHandler
+                // Only apply custom connection callback when running in a docker container.
+                // When debugging locally (not in container), the standard HttpClient will work fine.
+                if (RunningInContainer)
                 {
-                    ConnectCallback = async (context, ct) =>
+                    clientOptions.HttpClientFactory = () => new HttpClient(new SocketsHttpHandler
                     {
-                        var emulatorHost = new Uri(AccountEndpoint).Host;
-                        var host = context.DnsEndPoint.Host is "127.0.0.1" or "localhost"
-                            ? emulatorHost
-                            : context.DnsEndPoint.Host;
-                        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+                        // The Cosmos emulator returns 127.0.0.1 in its service discovery responses.
+                        // From within a Docker container, 127.0.0.1 resolves to the container's own
+                        // loopback, not the emulator. This handler intercepts those connections and
+                        // redirects them to the actual emulator hostname.
+                        ConnectCallback = async (context, ct) =>
                         {
-                            NoDelay = true
-                        };
-                        await socket.ConnectAsync(host, context.DnsEndPoint.Port, ct);
-                        return new NetworkStream(socket, ownsSocket: true);
-                    }
-                });
+                            var emulatorHost = new Uri(AccountEndpoint).Host;
+                            var host = context.DnsEndPoint.Host is "127.0.0.1" or "localhost"
+                                ? emulatorHost
+                                : context.DnsEndPoint.Host;
+                            var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+                            {
+                                NoDelay = true
+                            };
+                            await socket.ConnectAsync(host, context.DnsEndPoint.Port, ct);
+                            return new NetworkStream(socket, ownsSocket: true);
+                        }
+                    });
 
-                logger.LogInformation("Using local Cosmos DB emulator at {Endpoint}", AccountEndpoint);
+                    logger.LogInformation("Using containerized Cosmos DB emulator at {Endpoint}", AccountEndpoint);
+                }
+                else
+                {
+                    logger.LogInformation("Using local Cosmos DB emulator at {Endpoint}", AccountEndpoint);
+                }
+
                 CosmosClient ??= CosmosClient.CreateAndInitializeAsync(
                     AccountEndpoint,
                     AccountKey,
