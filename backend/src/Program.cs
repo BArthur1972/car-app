@@ -9,16 +9,6 @@ builder.RegisterServices();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(policy =>
-    {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-    });
-});
-
 var app = builder.Build();
 
 // Initialize Cosmos DB infrastructure (database/container)
