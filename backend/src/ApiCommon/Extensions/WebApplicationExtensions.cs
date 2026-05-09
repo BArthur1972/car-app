@@ -1,7 +1,7 @@
-using Cars.ApiCommon.Cosmos.Options;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Cars.ApiCommon.Cosmos.Options;
 
 namespace Cars.ApiCommon.Extensions;
 
@@ -19,10 +19,8 @@ public static class WebApplicationExtensions
 
         var logger = app.Services.GetRequiredService<ILogger<Program>>();
         var cosmosAccountOptions = app.Services.GetRequiredService<IOptions<CosmosAccountOptions>>().Value;
-        var cosmosContainerOptions = app.Services.GetRequiredService<IOptions<CosmosContainerOptions>>().Value;
 
-        // CosmosClient should already be initialized during DI configuration
-        if (cosmosAccountOptions.CosmosClient == null)
+        if (cosmosAccountOptions.CosmosClient is null)
         {
             logger.LogWarning("CosmosClient is not initialized. Skipping database initialization.");
             return;
@@ -31,38 +29,35 @@ public static class WebApplicationExtensions
         if (!app.Environment.IsDevelopment() && !cosmosAccountOptions.UseEmulator)
         {
             logger.LogInformation(
-                "Production mode: Skipping auto-creation of database/container. " + 
+                "Production mode: Skipping auto-creation of database/container. " +
                 "Infrastructure should be pre-provisioned.");
             return;
         }
 
         try
         {
-            logger.LogInformation(
-                "Development mode: Ensuring Cosmos DB database '{DatabaseId}' and container '{ContainerId}' exist",
-                cosmosContainerOptions.DatabaseId,
-                cosmosContainerOptions.ContainerId);
+            foreach (var containerOpts in cosmosAccountOptions.ContainerOptions)
+            {
+                var databaseResponse = await cosmosAccountOptions.CosmosClient
+                    .CreateDatabaseIfNotExistsAsync(containerOpts.DatabaseId);
 
-            var databaseResponse = await cosmosAccountOptions.CosmosClient.CreateDatabaseIfNotExistsAsync(
-                cosmosContainerOptions.DatabaseId);
+                logger.LogInformation(
+                    "Database '{DatabaseId}' ready (Status: {Status})",
+                    containerOpts.DatabaseId,
+                    databaseResponse.StatusCode);
 
-            logger.LogInformation(
-                "Database '{DatabaseId}' ready (Status: {Status})",
-                cosmosContainerOptions.DatabaseId,
-                databaseResponse.StatusCode);
+                var containerResponse = await databaseResponse.Database
+                    .CreateContainerIfNotExistsAsync(containerOpts.ContainerId, containerOpts.PartitionKey);
 
-            var containerResponse = await databaseResponse.Database.CreateContainerIfNotExistsAsync(
-                cosmosContainerOptions.ContainerId,
-                "/id");
-
-            logger.LogInformation(
-                "Container '{ContainerId}' ready (Status: {Status})",
-                cosmosContainerOptions.ContainerId,
-                containerResponse.StatusCode);
+                logger.LogInformation(
+                    "Container '{ContainerId}' ready (Status: {Status})",
+                    containerOpts.ContainerId,
+                    containerResponse.StatusCode);
+            }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to initialize Cosmos DB database and container");
+            logger.LogError(ex, "Failed to initialize Cosmos DB database and containers");
             throw;
         }
     }

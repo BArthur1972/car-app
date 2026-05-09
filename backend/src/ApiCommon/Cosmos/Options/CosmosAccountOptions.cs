@@ -1,4 +1,6 @@
 using System.Net.Sockets;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.Azure.Cosmos;
@@ -46,24 +48,30 @@ public class CosmosAccountOptions
     public CosmosClient? CosmosClient { get; private set; }
 
     /// <summary>
+    /// Gets the container options registered during initialization.
+    /// </summary>
+    public IReadOnlyList<CosmosContainerOptions> ContainerOptions { get; private set; } = [];
+
+    /// <summary>
     /// Initializes the Cosmos client with the specified options.
     /// </summary>
     /// <param name="logger">The logger to use for logging.</param>
-    /// <param name="cosmosContainerOptions">The Cosmos container options.</param>
-    public void InitializeCosmosClient(ILogger logger, CosmosContainerOptions cosmosContainerOptions)
+    /// <param name="containerOptions">The options for all Cosmos containers.</param>
+    public void InitializeCosmosClient(ILogger logger, IEnumerable<CosmosContainerOptions> containerOptions)
     {
-
         try
         {
-            IReadOnlyList<(string, string)> containers = [
-                (cosmosContainerOptions.DatabaseId, cosmosContainerOptions.ContainerId)
-            ];
+            ContainerOptions = [.. containerOptions];
+
+            IReadOnlyList<(string, string)> containers = ContainerOptions
+                .Select(c => (c.DatabaseId, c.ContainerId))
+                .ToList();
 
             CosmosClientOptions clientOptions = new()
             {
-                UseSystemTextJsonSerializerWithOptions = new System.Text.Json.JsonSerializerOptions()
+                UseSystemTextJsonSerializerWithOptions = new JsonSerializerOptions()
                 {
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 }
             };
 

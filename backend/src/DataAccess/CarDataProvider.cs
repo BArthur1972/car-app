@@ -1,3 +1,4 @@
+using Cars.ApiCommon.Cosmos;
 using Cars.ApiCommon.Exceptions;
 using Cars.DataAccess.Entities;
 using Cars.Models;
@@ -5,14 +6,16 @@ using Microsoft.Azure.Cosmos;
 
 namespace Cars.DataAccess;
 
-public class CarDataProvider(Container container, ILogger<CarDataProvider> logger)
+public class CarDataProvider(
+    [FromKeyedServices(CosmosContainerConstants.CarsContainer)] Container container,
+    ILogger<CarDataProvider> logger)
     : ICarDataProvider
 {
     public async Task AddCarAsync(Car car)
     {
         try
         {
-            await container.UpsertItemAsync<Car>(car, new PartitionKey(car.Id));
+            await container.UpsertItemAsync(car, new PartitionKey(car.Id));
             logger.LogInformation("Added car: {Car}", car);
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)

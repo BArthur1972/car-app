@@ -53,30 +53,32 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
-        services.AddOptionsWithValidation<CosmosContainerOptions>(
-            configuration.GetSection(CosmosContainerOptions.SectionKey));
+        var containerOptionsMap = CosmosContainerConstants.ContainerNames
+            .ToDictionary(
+                name => name,
+                name => configuration
+                    .GetSection($"{CosmosContainerConstants.ContainersSectionKey}:{name}")
+                    .Get<CosmosContainerOptions>()
+                    ?? throw new InvalidOperationException($"Missing Cosmos container config for '{name}'"));
 
-        // Initialize CosmosClient during DI configuration
         services.AddOptionsWithValidation<CosmosAccountOptions>(
             configuration.GetSection(CosmosAccountOptions.SectionKey))
-            .Configure<ILoggerFactory, IOptions<CosmosContainerOptions>>(
-                (options, loggerFactory, cosmosContainerOptions) =>
+            .Configure<ILoggerFactory>(
+                (options, loggerFactory) =>
                 {
-                    ArgumentNullException.ThrowIfNull(loggerFactory);
-                    ArgumentNullException.ThrowIfNull(cosmosContainerOptions);
-
                     var logger = loggerFactory.CreateLogger<CosmosAccountOptions>();
-                    options.InitializeCosmosClient(logger, cosmosContainerOptions.Value);
+                    options.InitializeCosmosClient(logger, containerOptionsMap.Values);
                 });
 
-        // Add a single instance of the Cosmos container to be shared across the application.
-        services.AddSingleton(sp =>
+        foreach (var (name, containerOptions) in containerOptionsMap)
         {
-            var cosmosOptions = sp.GetRequiredService<IOptions<CosmosAccountOptions>>().Value;
-            var containerOptions = sp.GetRequiredService<IOptions<CosmosContainerOptions>>().Value;
-            var logger = sp.GetRequiredService<ILogger<CosmosFacade>>();
-            return new CosmosFacade(cosmosOptions, containerOptions, logger).GetContainer();
-        });
+            services.AddKeyedSingleton(name, (sp, _) =>
+            {
+                var cosmosOptions = sp.GetRequiredService<IOptions<CosmosAccountOptions>>().Value;
+                var logger = sp.GetRequiredService<ILogger<CosmosFacade>>();
+                return new CosmosFacade(cosmosOptions, containerOptions, logger).GetContainer();
+            });
+        }
 
         services.AddSingleton<ICarDataProvider, CarDataProvider>();
 
