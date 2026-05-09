@@ -1,5 +1,7 @@
 using Cars.ApiCommon.HealthChecks;
+using Cars.DataAccess.Entities;
 using Cars.Management;
+using Microsoft.AspNetCore.Identity;
 
 namespace Cars.ApiCommon.Extensions;
 
@@ -14,7 +16,11 @@ public static class StartupExtensions
 
         builder.Services.AddCosmosDataAccess(builder.Configuration);
         builder.Services.AddCorsPolicy(builder.Configuration);
+        builder.Services.AddJwtAuthentication(builder.Configuration);
+
+        builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddSingleton<ICarManagementProvider, CarManagementProvider>();
+        builder.Services.AddSingleton<IAuthManagementProvider, AuthManagementProvider>();
 
         builder.Services.AddHealthChecks()
             .AddCheck<CosmosHealthCheck>(

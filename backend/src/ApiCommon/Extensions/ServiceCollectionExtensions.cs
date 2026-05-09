@@ -1,7 +1,11 @@
+using System.Text;
+using Cars.ApiCommon.Auth;
 using Cars.ApiCommon.Cosmos;
 using Cars.ApiCommon.Cosmos.Options;
 using Cars.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cars.ApiCommon.Extensions;
 
@@ -81,6 +85,38 @@ public static class ServiceCollectionExtensions
         }
 
         services.AddSingleton<ICarDataProvider, CarDataProvider>();
+        services.AddSingleton<IUserDataProvider, UserDataProvider>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddJwtAuthentication(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        services.AddOptionsWithValidation<JwtOptions>(
+            configuration.GetSection(JwtOptions.SectionKey));
+
+        var jwtSecret = configuration[$"{JwtOptions.SectionKey}:Secret"]
+            ?? throw new InvalidOperationException("Jwt:Secret is required");
+
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtSecret)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero,
+                };
+            });
 
         return services;
     }

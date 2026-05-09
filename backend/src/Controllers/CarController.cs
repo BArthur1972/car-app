@@ -1,9 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
 using Cars.Management;
 using Cars.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cars.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("cars")]
 public class CarController(ILogger<CarController> logger, ICarManagementProvider carProvider)

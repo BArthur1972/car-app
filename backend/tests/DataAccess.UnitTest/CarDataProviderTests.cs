@@ -119,13 +119,13 @@ public class CarDataProviderTests
     }
 
     [Fact]
-    public async Task GetCarsAsync_ThrowsDataNotFoundException_WhenNoCarsExist()
+    public async Task GetCarsAsync_ReturnsEmptyList_WhenNoCarsExist()
     {
         SetupQueryIterator([]);
 
-        var act = async () => await sut.GetCarsAsync();
+        var result = await sut.GetCarsAsync();
 
-        await act.Should().ThrowAsync<DataNotFoundException>();
+        result.Should().BeEmpty();
     }
 
     [Fact]
