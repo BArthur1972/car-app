@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { register } from "@/lib/api";
+import { ApiError } from "@/lib/http-client";
 
 export default function Page() {
 	const router = useRouter();
@@ -22,7 +23,7 @@ export default function Page() {
 			await register({ username, email, password });
 			router.push("/login");
 		} catch (err: unknown) {
-			if (err instanceof Error && err.message.includes("409")) {
+			if (err instanceof ApiError && err.status === 409) {
 				setError("Email is already registered");
 			} else {
 				setError("Something went wrong. Please try again.");

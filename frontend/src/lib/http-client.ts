@@ -1,5 +1,12 @@
 import { getToken } from "@/lib/auth";
 
+class ApiError extends Error {
+	constructor(public readonly status: number, message: string) {
+		super(message);
+		this.name = "ApiError";
+	}
+}
+
 class HttpClient {
 	private baseURL: string;
 	private headers: Record<string, string>;
@@ -31,7 +38,7 @@ class HttpClient {
 		});
 
 		if (!response.ok) {
-			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			throw new ApiError(response.status, response.statusText);
 		}
 
 		if (response.status === 204 || options.method === "DELETE") {
@@ -98,4 +105,4 @@ class HttpClient {
 	}
 }
 
-export { HttpClient };
+export { HttpClient, ApiError };
