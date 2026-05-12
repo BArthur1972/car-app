@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function proxy(request: NextRequest) {
-	// Id the user is not authenticated and the request requires authentication,
+	// If the user is not authenticated and the request requires authentication,
 	// we redirect the user to the login page.
 	const token = request.cookies.get("token");
 	const isAuthRequired =
