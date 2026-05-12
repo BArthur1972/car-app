@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCars } from "@/lib/api";
+import { getCars } from "@/lib/server-api";
 import CarGrid from "@/components/CarGrid";
 import LogoutButton from "@/components/LogoutButton";
 

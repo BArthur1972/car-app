@@ -36,7 +36,6 @@ public class AuthManagementProvider(
         user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
 
         await userDataProvider.CreateUserAsync(user);
-        logger.LogInformation("Registered new user: {UserId}", user.Id);
     }
 
     public async Task<AuthResponse> LoginAsync(string email, string password)

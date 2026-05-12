@@ -45,7 +45,8 @@ class HttpClient {
 			return undefined as unknown as T;
 		}
 
-		return response.json();
+		const text = await response.text();
+		return (text ? JSON.parse(text) : undefined) as T;
 	}
 
 	// document.cookie is not available server-side, so skip

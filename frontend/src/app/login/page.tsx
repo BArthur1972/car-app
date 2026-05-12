@@ -23,7 +23,6 @@ export default function Page() {
             setToken(response.token);
             router.push("/");
         } catch (err) {
-            console.log("Login failed with error: ", err);
             setError("Invalid email or password");
         } finally {
             setSubmitting(false);

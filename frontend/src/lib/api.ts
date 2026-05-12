@@ -14,12 +14,6 @@ class ApiClient extends HttpClient {
 	}
 
 	readonly cars = {
-		get: (): Promise<CarResponse[]> =>
-			this.get<CarResponse[]>(API_CONFIG.endpoints.cars),
-
-		getById: (id: string): Promise<CarResponse> =>
-			this.get<CarResponse>(API_CONFIG.endpoints.car(id)),
-
 		create: (car: CarRequest): Promise<CarResponse> =>
 			this.post<CarResponse>(API_CONFIG.endpoints.addCar, car),
 
@@ -41,8 +35,6 @@ class ApiClient extends HttpClient {
 
 export const api = new ApiClient();
 
-export const getCars = () => api.cars.get();
-export const getCar = (id: string) => api.cars.getById(id);
 export const addCar = (car: CarRequest) => api.cars.create(car);
 export const updateCar = (id: string, car: CarUpdate) =>
 	api.cars.update(id, car);

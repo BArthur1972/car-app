@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCar } from "@/lib/api";
+import { getCar } from "@/lib/server-api";
 import CarImage from "./CarImage";
 import DeleteCarAction from "./DeleteCarAction";
 

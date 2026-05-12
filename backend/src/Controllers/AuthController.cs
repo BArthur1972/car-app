@@ -16,6 +16,7 @@ public class AuthController(IAuthManagementProvider authProvider, ILogger<AuthCo
     public async Task<ActionResult> Register([FromBody] RegisterRequest request)
     {
         await authProvider.RegisterAsync(request).ConfigureAwait(false);
+
         logger.LogInformation("User registered: {Email}", request.Email);
         return StatusCode(StatusCodes.Status201Created);
     }
@@ -25,6 +26,8 @@ public class AuthController(IAuthManagementProvider authProvider, ILogger<AuthCo
     {
         AuthResponse response = await authProvider.LoginAsync(request.Email, request.Password)
             .ConfigureAwait(false);
+        
+        logger.LogInformation("User logged in: {Email}", request.Email);
         return Ok(response);
     }
 }

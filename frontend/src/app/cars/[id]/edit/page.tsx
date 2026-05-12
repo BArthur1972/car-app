@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getCar } from "@/lib/api";
+import { getCar } from "@/lib/server-api";
 import EditCarForm from "./EditCarForm";
 
 export const dynamic = 'force-dynamic';
