@@ -1,5 +1,4 @@
 using Cars.ApiCommon.Extensions;
-using Cars.ApiCommon.Middlewares;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +11,6 @@ builder.Services.AddOpenApi();
 var app = builder.Build();
 
 // Initialize Cosmos DB infrastructure (database/container)
-// In production, infrastructure should be pre-provisioned via IaC (Bicep/Terraform)
 // This only auto-creates in Development or when using the Cosmos emulator
 await app.InitializeCosmosDbAsync();
 
@@ -22,7 +20,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseExceptionHandler();
 
 if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();

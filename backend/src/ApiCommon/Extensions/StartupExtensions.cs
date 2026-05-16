@@ -1,4 +1,5 @@
 using Cars.ApiCommon.HealthChecks;
+using Cars.ApiCommon.Middlewares;
 using Cars.DataAccess.Entities;
 using Cars.Management;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,9 @@ public static class StartupExtensions
     public static void RegisterServices(this WebApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.AddProblemDetails();
+        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
         builder.Services.AddCosmosDataAccess(builder.Configuration);
         builder.Services.AddCorsPolicy(builder.Configuration);
