@@ -2,12 +2,14 @@
 	"name": "frontend",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint",
 		"format": "prettier --ignore-path .gitignore --write '**/*.+(js|ts|json)'",
+		"test": "vitest run",
 		"kill": "lsof -ti:3000 | xargs kill -9"
 	},
 	"dependencies": {
@@ -20,10 +22,14 @@
 		"@types/node": "^20",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
+		"@vitest/browser": "^4.1.6",
+		"@vitest/coverage-v8": "^4.1.6",
 		"eslint": "^9",
 		"eslint-config-next": "16.2.4",
+		"happy-dom": "^20.9.0",
 		"prettier": "^3.8.3",
 		"tailwindcss": "^4",
-		"typescript": "^5"
+		"typescript": "^5",
+		"vitest": "^4.1.6"
 	}
 }
