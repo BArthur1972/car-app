@@ -2,12 +2,14 @@ using Cars.ApiCommon.Exceptions;
 using Cars.ApiCommon.Middlewares;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace ApiCommon.UnitTest.Middlewares;
 
 public class GlobalExceptionHandlerTests
 {
-    private readonly GlobalExceptionHandler sut = new();
+    private readonly GlobalExceptionHandler sut =
+        new(NullLogger<GlobalExceptionHandler>.Instance);
 
     [Fact]
     public async Task TryHandleAsync_MapsApplicationExceptionStatusCode()

@@ -22,7 +22,7 @@ export default function Page() {
             const response = await login({ email, password });
             setToken(response.token);
             router.push("/");
-        } catch (err) {
+        } catch {
             setError("Invalid email or password");
         } finally {
             setSubmitting(false);
@@ -71,7 +71,7 @@ export default function Page() {
                 </form>
 
                 <p className="mt-4 text-sm text-gray-600 text-center">
-                    Don't have an account?{" "}
+                    {"Don't have an account?"}{" "}
                     <Link href="/register" className="text-blue-600 hover:text-blue-800">
                         Register
                     </Link>

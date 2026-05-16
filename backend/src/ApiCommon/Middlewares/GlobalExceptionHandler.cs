@@ -22,15 +22,9 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
 
         var errorResponse = new ErrorResponse(new ErrorDetail(errorCode, message));
 
-        httpContext.Response.StatusCode = statusCode;
-        httpContext.Response.ContentType = "application/json";
-        httpContext.Response.Headers.TryAdd("x-ms-error-code", errorResponse.Error.Code);
-
-        await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
-        
         if (statusCode >= 500)
         {
-            logger.LogError(exception, 
+            logger.LogError(exception,
                 "Server error in {RequestMethod} {RequestPath}: {StatusCode} {ErrorCode} - {Message}",
                 httpContext.Request.Method,
                 httpContext.Request.Path,
@@ -47,6 +41,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
                 statusCode,
                 errorCode);
         }
+
+        httpContext.Response.StatusCode = statusCode;
+        httpContext.Response.ContentType = "application/json";
+        httpContext.Response.Headers.TryAdd("x-ms-error-code", errorResponse.Error.Code);
+
+        await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
 
         return true;
     }
