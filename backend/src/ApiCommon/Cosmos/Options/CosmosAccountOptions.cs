@@ -17,11 +17,6 @@ public class CosmosAccountOptions
     public required string AccountEndpoint { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether MSI credentials will be used or not.
-    /// </summary>
-    public bool UseManagedIdentity { get; set; }
-
-    /// <summary>
     /// Gets or sets a value indicating whether the local Cosmos DB emulator is being used.
     /// </summary>
     public bool UseEmulator { get; set; }
@@ -119,18 +114,9 @@ public class CosmosAccountOptions
             }
             else
             {
-                TokenCredential credential;
-                if (UseManagedIdentity)
-                {
-                    logger.LogInformation("Using Managed Identity for Cosmos DB authentication");
-                    var clientId = Environment.GetEnvironmentVariable(CosmosMsiEnvName);
-                    credential = new ManagedIdentityCredential(clientId);
-                }
-                else
-                {
-                    logger.LogInformation("Using DefaultAzureCredential for Cosmos DB authentication");
-                    credential = new DefaultAzureCredential();
-                }
+                logger.LogInformation("Using Managed Identity for Cosmos DB authentication");
+                var clientId = Environment.GetEnvironmentVariable(CosmosMsiEnvName);
+                TokenCredential credential = new ManagedIdentityCredential(clientId);
 
                 CosmosClient ??= CosmosClient.CreateAndInitializeAsync(
                     AccountEndpoint,
