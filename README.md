@@ -48,11 +48,11 @@ BACKEND_URL=http://localhost:5292
 NEXT_PUBLIC_BACKEND_URL=http://localhost:5292
 ```
 
-The backend reads the JWT secret from .NET User Secrets in development:
+For local dev without Docker, the backend reads the JWT signing key from .NET User Secrets. You can use either a symmetric secret (quickest) or a certificate:
 
 ```bash
 cd backend
-dotnet user-secrets set "Jwt:Secret" "your-secret-here" --project src/Cars.csproj
+dotnet user-secrets set "Jwt:Secret" "your-secret-here-min-32-chars" --project src/Cars.csproj
 ```
 
 ## Tests
@@ -72,7 +72,7 @@ dotnet test
 | `CosmosDB__CosmosAccountOptions__AccountEndpoint` | Cosmos DB endpoint |
 | `CosmosDB__CosmosAccountOptions__UseManagedIdentity` | Use managed identity in production |
 | `CosmosDB__CosmosAccountOptions__RunningInContainer` | Enables Docker networking workaround for emulator |
-| `Jwt__Secret` | JWT signing secret (use User Secrets locally, Container App secret in production) |
+| `JWT_CERT_BASE64` | Base64-encoded PFX certificate for JWT signing (set in `.env` for Docker Compose, Container App secret in production) |
 | `Cors__AllowedOrigins__0` | Allowed frontend origin |
 
 **Frontend:**

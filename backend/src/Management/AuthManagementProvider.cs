@@ -1,13 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Cars.ApiCommon.Auth;
 using Cars.ApiCommon.Exceptions;
 using Cars.DataAccess;
 using Cars.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using User = Cars.DataAccess.Entities.User;
 
 namespace Cars.Management;
@@ -15,10 +10,9 @@ namespace Cars.Management;
 public class AuthManagementProvider(
     IUserDataProvider userDataProvider,
     IPasswordHasher<User> passwordHasher,
-    IOptions<JwtOptions> jwtOptions,
+    IJwtTokenService jwtTokenService,
     ILogger<AuthManagementProvider> logger) : IAuthManagementProvider
 {
-    private readonly JwtOptions jwtOptions = jwtOptions.Value;
 
     public async Task RegisterAsync(RegisterRequest request)
     {
@@ -36,6 +30,7 @@ public class AuthManagementProvider(
         user.PasswordHash = passwordHasher.HashPassword(user, request.Password);
 
         await userDataProvider.CreateUserAsync(user);
+        logger.LogInformation("User registered: {Email}", request.Email);
     }
 
     public async Task<AuthResponse> LoginAsync(string email, string password)
@@ -58,7 +53,8 @@ public class AuthManagementProvider(
         if (result == PasswordVerificationResult.SuccessRehashNeeded)
             await TryRehashPasswordAsync(user, password);
 
-        var token = GenerateJwtToken(user);
+        var token = jwtTokenService.GenerateToken(user);
+        logger.LogInformation("User logged in: {Email}", email);
         return new AuthResponse(token);
     }
 
@@ -74,25 +70,5 @@ public class AuthManagementProvider(
             logger.LogWarning(ex, "Failed to rehash password for user {UserId}. " +
             "Login will succeed but hash upgrade was skipped.", user.Id);
         }
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
-        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        };
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes),
-            signingCredentials: credentials);
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Cars.ApiCommon.Auth;
 using Cars.ApiCommon.Cosmos;
@@ -100,8 +101,28 @@ public static class ServiceCollectionExtensions
         services.AddOptionsWithValidation<JwtOptions>(
             configuration.GetSection(JwtOptions.SectionKey));
 
-        var jwtSecret = configuration[$"{JwtOptions.SectionKey}:Secret"]
-            ?? throw new InvalidOperationException("Jwt:Secret is required");
+        // Register the JWT token service used for generating tokens
+        services.AddSingleton<IJwtTokenService, JwtTokenService>();
+
+        var jwtOptions = configuration.GetSection(JwtOptions.SectionKey).Get<JwtOptions>()
+            ?? throw new InvalidOperationException("JWT configuration is missing");
+
+        SecurityKey signingKey;
+        if (!string.IsNullOrEmpty(jwtOptions.CertificateBase64))
+        {
+            var certBytes = Convert.FromBase64String(jwtOptions.CertificateBase64);
+            var certificate = X509CertificateLoader.LoadPkcs12(certBytes, jwtOptions.CertificatePassword);
+            signingKey = new RsaSecurityKey(certificate.GetRSAPrivateKey());
+        }
+        else if (!string.IsNullOrEmpty(jwtOptions.Secret))
+        {
+            signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Secret));
+        }
+        else
+        {
+            throw new InvalidOperationException(
+                "JWT signing key not configured. Provide either Jwt:CertificateBase64 or Jwt:Secret");
+        }
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -110,10 +131,11 @@ public static class ServiceCollectionExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtSecret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    IssuerSigningKey = signingKey,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
                     ClockSkew = TimeSpan.Zero,
                 };
             });

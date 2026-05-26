@@ -8,17 +8,15 @@ namespace Cars.Controllers;
 [Authorize]
 [ApiController]
 [Route("cars")]
-public class CarController(ILogger<CarController> logger, ICarManagementProvider carProvider)
+public class CarController(ICarManagementProvider carProvider)
     : ControllerBase
 {
-    private readonly ILogger<CarController> logger = logger;
     private readonly ICarManagementProvider carManagementProvider = carProvider;
 
     [HttpGet("getCars")]
     public async Task<ActionResult> GetCars()
     {
         IEnumerable<CarResponsePayload> cars = await carManagementProvider.GetCars().ConfigureAwait(false);
-        logger.LogInformation("Cars obtained: {Count} cars", cars.Count());
         return Ok(cars);
     }
 

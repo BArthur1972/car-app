@@ -67,7 +67,6 @@ public class UserDataProvider(
         try
         {
             await container.CreateItemAsync(user, new PartitionKey(user.Id));
-            logger.LogInformation("Created user: {User}", user);
         }
         catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
         {
@@ -85,7 +84,6 @@ public class UserDataProvider(
         try
         {
             await container.ReplaceItemAsync(user, user.Id, new PartitionKey(user.Id));
-            logger.LogInformation("Updated user: {User}", user);
         }
         catch (CosmosException e) when (e.StatusCode == HttpStatusCode.NotFound)
         {
@@ -103,7 +101,6 @@ public class UserDataProvider(
         try
         {
             await container.DeleteItemAsync<User>(userId, new PartitionKey(userId));
-            logger.LogInformation("Deleted user with Id: {Id}", userId);
         }
         catch (CosmosException e) when (e.StatusCode == HttpStatusCode.NotFound)
         {

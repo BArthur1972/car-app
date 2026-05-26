@@ -29,8 +29,8 @@ services:
       - CosmosDB__CosmosAccountOptions__AccountEndpoint=http://cosmos-emulator:8081
       # Enable container-specific networking workarounds for Cosmos emulator
       - CosmosDB__CosmosAccountOptions__RunningInContainer=true
-      # JWT secret — set JWT_SECRET in the .env file at the project root (gitignored)
-      - Jwt__Secret=${JWT_SECRET}
+      # JWT certificate — set JWT_CERT_BASE64 in the .env file at the project root (gitignored)
+      - Jwt__CertificateBase64=${JWT_CERT_BASE64}
     depends_on:
       cosmos-emulator:
         condition: service_healthy

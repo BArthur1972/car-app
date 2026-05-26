@@ -16,7 +16,6 @@ public class CarDataProvider(
         try
         {
             await container.UpsertItemAsync(car, new PartitionKey(car.Id));
-            logger.LogInformation("Added car: {Car}", car);
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
@@ -45,7 +44,6 @@ public class CarDataProvider(
             ItemResponse<Car> response =
                 await container.ReadItemAsync<Car>(id, new PartitionKey(id));
 
-            logger.LogInformation("Car obtained: {Car}", response.Resource);
             return response.Resource;
         }
         catch (CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -71,7 +69,6 @@ public class CarDataProvider(
                 cars.AddRange(response);
             }
 
-            logger.LogDebug("Cars obtained: {Count} cars", cars.Count);
             return cars;
         }
         catch (CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -91,7 +88,6 @@ public class CarDataProvider(
         try
         {
             await container.DeleteItemAsync<Car>(id, new PartitionKey(id));
-            logger.LogInformation("Deleted car with Id: {Id}", id);
         }
         catch (CosmosException e)
         {
@@ -127,8 +123,6 @@ public class CarDataProvider(
                 throw new InternalServerErrorException(
                     message: $"Failed to update car with Id: {id}");
             }
-
-            logger.LogInformation("Successfully updated car with Id: {Id}", id);
         }
         catch (CosmosException e)
         {

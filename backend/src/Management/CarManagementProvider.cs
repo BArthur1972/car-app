@@ -34,7 +34,6 @@ public class CarManagementProvider(
         try
         {
             var cars = await carDataProvider.GetCarsAsync();
-            logger.LogInformation("Cars obtained: {Count} cars", cars.Count());
             return cars.ToResponsePayloads();
         }
         catch (Exception e)
@@ -49,7 +48,6 @@ public class CarManagementProvider(
         try
         {
             var car = await carDataProvider.GetCarAsync(id);
-            logger.LogInformation("Car obtained: {Car}", car);
             return car.ToResponsePayload();
         }
         catch (Exception e)

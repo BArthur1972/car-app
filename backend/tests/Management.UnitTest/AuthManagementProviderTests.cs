@@ -7,7 +7,6 @@ using Cars.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Management.UnitTest;
@@ -16,21 +15,20 @@ public class AuthManagementProviderTests
 {
     private readonly Mock<IUserDataProvider> userDataProviderMock = new();
     private readonly Mock<IPasswordHasher<User>> passwordHasherMock = new();
+    private readonly Mock<IJwtTokenService> jwtTokenServiceMock = new();
     private readonly Mock<ILogger<AuthManagementProvider>> loggerMock = new();
     private readonly AuthManagementProvider sut;
 
     public AuthManagementProviderTests()
     {
-        var jwtOptions = Options.Create(new JwtOptions
-        {
-            Secret = "test-secret-32-characters-minimum!",
-            ExpiryMinutes = 60
-        });
+        jwtTokenServiceMock
+            .Setup(x => x.GenerateToken(It.IsAny<User>()))
+            .Returns("mock.jwt.token");
 
         sut = new AuthManagementProvider(
             userDataProviderMock.Object,
             passwordHasherMock.Object,
-            jwtOptions,
+            jwtTokenServiceMock.Object,
             loggerMock.Object);
     }
 
