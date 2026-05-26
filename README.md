@@ -16,7 +16,7 @@ docker compose up --build
 
 The app will be at `http://localhost:3000`. The backend API is at `http://localhost:5292`.
 
-Before the app works end to end, you need to create the `carsapp` database and two containers (`cars`, `users`) in the emulator. Open the Data Explorer at `http://localhost:1234` and create them with `/id` as the partition key.
+The backend automatically creates the `carsapp` database and `cars`/`users` containers in the emulator on startup.
 
 To reset the emulator data:
 
