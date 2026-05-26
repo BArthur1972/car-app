@@ -9,5 +9,5 @@ public class JwtOptions
     [Required, MinLength(32)]
     public required string Secret { get; set; }
 
-    public int ExpiryMinutes { get; set; } = 60;
+    public int ExpiryMinutes { get; set; }
 }
