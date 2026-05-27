@@ -14,5 +14,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/((?!_next|favicon.ico).*)"],
+	// Exclude API routes, _next, and favicon from middleware
+	matcher: ["/((?!api|_next|favicon.ico).*)"],
 };

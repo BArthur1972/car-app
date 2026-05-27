@@ -1,10 +1,8 @@
 export const API_CONFIG = {
-	// Server Components use BACKEND_URL (Docker internal network or localhost).
-	// Client Components use NEXT_PUBLIC_BACKEND_URL (baked into bundle at build time).
+	// Server Components use BACKEND_URL to directly communicate with the backend.
+	// Client Components route requests to /api/* (proxied to the backend).
 	baseURL:
-		typeof window === "undefined"
-			? process.env.BACKEND_URL
-			: process.env.NEXT_PUBLIC_BACKEND_URL,
+		typeof window === "undefined" ? process.env.BACKEND_URL : "/api",
 	endpoints: {
 		cars: "/cars/getCars",
 		car: (id: string) => `/cars/getCar/${id}`,

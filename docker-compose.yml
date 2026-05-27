@@ -39,14 +39,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        # Pass NEXT_PUBLIC_* vars as build args (required for client-side bundle)
-        NEXT_PUBLIC_BACKEND_URL: http://localhost:5292
     ports:
       - "3000:3000"
     environment:
-      # Server-side backend URL (used by Server Components via Docker internal network)
-      # Client-side uses NEXT_PUBLIC_BACKEND_URL baked into bundle at build time
+      # Server-side backend URL
+      # Client requests will be proxied through /api routes to the backend
       - BACKEND_URL=http://backend:8080
     depends_on:
       - backend
