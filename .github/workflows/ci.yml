@@ -50,5 +50,3 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: frontend
-        env:
-          NEXT_PUBLIC_BACKEND_URL: http://localhost:5292

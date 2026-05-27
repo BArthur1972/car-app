@@ -45,7 +45,6 @@ jobs:
       - name: Build and push frontend
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_BACKEND_URL=${{ secrets.BACKEND_URL }} \
             -t $ACR_NAME.azurecr.io/$FRONTEND_APP:${{ github.sha }} \
             -t $ACR_NAME.azurecr.io/$FRONTEND_APP:latest \
             ./frontend
