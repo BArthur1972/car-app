@@ -1,6 +1,8 @@
 'use client';
 
-const PLACEHOLDER = "/car_placeholder.jpg";
+import Image, { StaticImageData } from "next/image";
+import { useState } from "react";
+import placeholder from "@/../public/car_placeholder.jpg";
 
 interface CarImageProps {
     src: string | null;
@@ -8,16 +10,17 @@ interface CarImageProps {
 }
 
 export default function CarImage({ src, alt }: CarImageProps) {
+    const [imgSrc, setImgSrc] = useState<string | StaticImageData>(src || placeholder);
+
     return (
-        <img
-            src={src || PLACEHOLDER}
+        <Image
+            src={imgSrc}
             alt={alt}
+            width={256}
+            height={192}
+            priority
             className="w-64 h-48 object-cover rounded-lg flex-shrink-0"
-            onError={(e) => {
-                if (e.currentTarget.src !== PLACEHOLDER) {
-                    e.currentTarget.src = PLACEHOLDER;
-                }
-            }}
+            onError={() => setImgSrc(placeholder)}
         />
     );
 }
