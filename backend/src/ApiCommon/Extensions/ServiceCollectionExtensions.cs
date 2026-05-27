@@ -27,30 +27,6 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
     }
 
-    public static IServiceCollection AddCorsPolicy(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configuration);
-
-        var allowedOrigins = configuration
-            .GetSection("Cors:AllowedOrigins")
-            .Get<string[]>() ?? [];
-
-        services.AddCors(options =>
-        {
-            options.AddDefaultPolicy(policy =>
-            {
-                policy.WithOrigins(allowedOrigins)
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
-            });
-        });
-
-        return services;
-    }
-
     public static IServiceCollection AddCosmosDataAccess(
         this IServiceCollection services,
         IConfiguration configuration)

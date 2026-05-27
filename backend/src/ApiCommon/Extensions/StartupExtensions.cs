@@ -19,7 +19,6 @@ public static class StartupExtensions
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
         builder.Services.AddCosmosDataAccess(builder.Configuration);
-        builder.Services.AddCorsPolicy(builder.Configuration);
         builder.Services.AddJwtAuthentication(builder.Configuration);
 
         builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
